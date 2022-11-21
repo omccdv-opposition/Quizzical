@@ -51,7 +51,7 @@
       </ul></p>
       <p>At the end of the quiz, your points in each category are converted to iotas. Normally, Speed points are worth the lowest amount of iotas, followed by Recall points, then Depth points, then Specialization points.</p>
       <p>This quiz has:<ul>
-        <li><span data-i="questions.length"></span> questions with an estimated total length of <span data-i="(questions.length>0)?timeFormat(questions.map(x => x.par).reduce((x,y) => x+y)):'foo'"></span></li>
+        <li><span data-i="questions.length"></span> questions (out of a possible <span data-i="questionListLength"></span>) with an estimated total length of <span data-i="(questions.length>0)?timeFormat(questions.map(x => x.par).reduce((x,y) => x+y)):'foo'"></span></li>
         <li><span data-i="scores.recall.max" class="recall"></span> Recall points worth <span data-i="maxIota('recall')" class="recall"></span> iotas</li>
         <li><span data-i="scores.speed.max" class="speed"></span> Speed points worth <span data-i="maxIota('speed')" class="speed"></span> iotas</li>
         <li><span data-i="scores.depth.max" class="depth"></span> Depth points worth <span data-i="maxIota('depth')" class="depth"></span> iotas</li>

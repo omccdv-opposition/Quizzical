@@ -156,6 +156,7 @@ function allQuestionFiles() {
   return out
 }
 
+var questionListLength = 0
 function loadTopic() {
   let topics
   if (document.getElementById("topicSelector").value=="all") topics = allQuestionFiles()
@@ -163,6 +164,7 @@ function loadTopic() {
   let question_list = []
   for (let i=0;i<topics.length;i++) question_list.push(eval(topics[i]))
   question_list=question_list.flat()
+  questionListLength = question_list.length
   for (let i=0;i<questions.length;i++) {
     if (!["string","function"].includes(typeof questions[i].text)) {crash("Question #"+(i+1)+" of this file is undefined."); return}
     if (typeof questions[i].advanced !== "boolean") {crash("Question #"+i+" \""+questions[i].text+"\" has no 'advanced' property."); return}
@@ -175,9 +177,9 @@ function loadTopic() {
   }
   question_list = shuffle(question_list)
   while (true) {
+    if (question_list.length == 0) break
     let next = question_list.splice(0,1)[0]
     if (questions.length>0) if (questions.map(x => x.par).reduce((x,y) => x+y)>(document.getElementById("lengthSelector").value*60+next.par/2)) break
-    if (question_list.length == 0) break
     questions.push(next)
   }
   specialization_threshold = questions.map(x => maxMark(x)).sort(function(a,b) {return a-b})[Math.ceil(questions.length*0.8)-1]+1
