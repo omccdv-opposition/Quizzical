@@ -1,35 +1,106 @@
 body {
-  background-color: #190033;
-  color: #ffffff;
-  font-size: 18px;
-  font-family: "Verdana", sans-serif;
+	background-color: #190033;
+	color: #ffffff;
+	font-size: 18px;
+	font-family: Verdana, sans-serif;
+	word-wrap:break-word;
 }
 button,div {
-  display:inline-block;
+	display:inline-block;
 }
 span {
-  font-size: 22px;
-  font-family: Garamond, serif;
-  color: #ffffcc
+	font-size: 22px;
+	font-family: Garamond, serif;
+	color: #ffffcc
+}
+.table {
+	border-collapse: collapse;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #00ff00;
+}
+td {
+	vertical-align: top;
 }
 .recall {
-  color: #9966ff
+	color: #9966ff
 }
 .speed {
-  color: #99ffff
+	color: #99ffff
 }
 .depth {
-  color: #66ff66
+	color: #66ff66
 }
 .specialization {
-  color: #ff9966
+	color: #ff9966
 }
 button {
-  width: 20vw;
-  height: 10vh;
-  border-style: solid;
-  border-width: 2px;
-  border-color: #330066;
-  border-radius: 5vh;
-  background-color: #4c0099
+	width: 20vw;
+	height: 10vh;
+	border-style: solid;
+	border-width: 2px;
+	border-color: #330066;
+	border-radius: 5vh;
+	background-color: #4c0099
+}
+.level0 {color: #8d7373;font-size: 20px;}
+.level1 {color: #998066;font-size: 21px;}
+.level2 {color: #a6a65a;font-size: 22px;}
+.level3 {color: #80b34d;font-size: 23px;}
+.level4 {color: #40c040;font-size: 24px;}
+.level5 {color: #33cc80;font-size: 25px;}
+.level6 {color: #26d9d9;font-size: 26px;}
+.level7 {color: #1a80e6;font-size: 27px;}
+.level8 {color: #0d0df2;font-size: 28px;}
+.level9 {color: #8000ff;font-size: 29px;}
+.shiny9 {color: #8000ff;font-size: 30px;text-shadow:0 0 10px #8f00ff,0 0 20px #9f00ff,0 0 30px #af00ff,0 0 40px #bf00ff,0 0 50px #cf00ff,0 0 60px #df00ff,0 0 70px #ef00ff,0 0 80px #ff00ff}
+.multipleChoice {
+	height: 28px;
+	font-size: 20px;
+	border-radius:10px;
+	margin: 5px;
+}
+span.xscript {
+	position:relative;
+}
+span.xscript sub {
+	position:absolute;
+	left:0.1em;
+	bottom:-1ex;
+}
+
+/* Collapsible how-to-play */
+.collapsible {
+	color: white;
+	cursor: pointer;
+	border-radius: 0px;
+	border: none;
+	text-align: left;
+	outline: none;
+	font-size: 15px;
+}
+.collapsible:after {
+	content: '\002B';
+	color: white;
+	font-weight: bold;
+	float: right;
+	margin-left: 5px;
+}
+.active:after {
+	content: "\2212";
+}
+.collapsible_content {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.2s ease-out;
+}
+.col1 {
+	background-color: rgba(51,153,255,0.75);
+	width: 100%;
+	height: 40px;
+}
+.col2 {
+	background-color: rgba(51,153,255,0.5);
+	width: 90%;
+	height: 30px;
 }

@@ -1,112 +1,139 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>"Quizzical" by AleManInc</title>
-    <link rel="stylesheet" href="interface.css">
-  <head>
-  <body>
-    <div id="topicSelect" class="tab">
-      <table>
-        <tr>
-          <td><label for="topicSelector">Input the name of the topic:</label></td>
-          <td><select id="topicSelector">
-            <option value="all">All</option>
-            <option value="gcse_biology">GCSE Biology</option>
-            <option value="omccdv">OMCCDV</option>
-          </select></td>
-        </tr><tr>
-          <td><label for="lengthSelector">Input the duration in minutes:</label></td>
-          <td><input id="lengthSelector" min="5" type="number" max="525600" step="1" value="30"></input></td>
-        </tr>
-      </table>
-      <button onClick="loadTopic()">Select this topic</button>
-    </div>
-    <div id="howToPlay" class="tab" style="display:none">
-      <p>Welcome to <i>Quizzical by AleManInc!</i>!</p>
-      <h1>Instructions:</h1>
-      <h2>How do I start playing?</h2>
-      <button onClick="state='nextQuestion'">Click here</button>
-      <h2>How do I play this?</h2>
-      <p>In this game you will be asked questions about the topic you just chose. If you answer a question correctly, you score a "mark" based on the difficulty of the question and how extensive your answer was. These marks are converted to points.</p>
-      <p>There are two categories of questions: Normal questions and Advanced questions. Advanced questions are <span style="color:#00ff00">green</span> and are more difficult than Normal questions, but are also worth more points.</p>
-      <p>After answering each question, you will be shown: <ol>
-        <li>the question</li>
-        <li>your answer</li>
-        <li>a "model" answer that would score full marks</li>
-        <li>the mark you scored</li>
-        <li>a button that allows you to proceed.</li>
-      </ol></p>
-      <p>At the end of the game, you will be given a Level from 0 to 9 that reflects how well you did in the quiz. 9 is the highest level which normally requires 90-95% of the total marks (depending on the questions), and 0 is the lowest level which is given if you performed so poorly as to not deserve even the first level.</p>
-      <h2>How do I win this?</h2>
-      <p>Each question that you answer is worth a number of "marks". When you answer a question, the marks you obtained are converted to points in 4 categories:<ul>
-        <li>Recall: Each time you answer a regular question correctly, you gain Recall points equal to the number of marks you obtained.</li>
-        <li>Speed: Each time you answer a question correctly, you gain Speed points based on:<ul>
-          <li>how many marks you scored</li>
-          <li>how quickly you answered</li>
-        </ul>The maximum number of Speed points for any question is 5 × the number of marks for that question.</li>
-        <li>Depth: Each time you answer an Advanced question correctly, you gain Depth points equal to the number of marks you obtained.</li>
-        <li>Specialization: Each time you answer a question worth <span data-i="specialization_threshold"></span> or more marks correctly, you gain 1 Specialization point.</li>
-      </ul></p>
-      <p>At the end of the quiz, your points in each category are converted to iotas. Normally, Speed points are worth the lowest amount of iotas, followed by Recall points, then Depth points, then Specialization points.</p>
-      <p>This quiz has:<ul>
-        <li><span data-i="questions.length"></span> questions (out of a possible <span data-i="questionListLength"></span>) with an estimated total length of <span data-i="(questions.length>0)?timeFormat(questions.map(x => x.par).reduce((x,y) => x+y)):'foo'"></span></li>
-        <li><span data-i="scores.recall.max" class="recall"></span> Recall points worth <span data-i="maxIota('recall')" class="recall"></span> iotas</li>
-        <li><span data-i="scores.speed.max" class="speed"></span> Speed points worth <span data-i="maxIota('speed')" class="speed"></span> iotas</li>
-        <li><span data-i="scores.depth.max" class="depth"></span> Depth points worth <span data-i="maxIota('depth')" class="depth"></span> iotas</li>
-        <li><span data-i="scores.specialization.max" class="specialization"></span> Specialization points worth <span data-i="maxIota('specialization')" class="specialization"></span> iotas</li>
-      </ul></p>
-      <p>The level you get is determined by your total iotas - <i>not</i> the total marks or points. In order to obtain Level 9 you need <span data-i="levelBoundary(9)"></span> out of <span data-i="overallMaxIota()"></span> possible iotas.</p>
-    </div>
-    <div id="quiz" class="tab" style="display:none">
-      <p id="currentQuestionP"></p>
-      <label for="answerLine">Your answer:</label><br>
-      <textarea id="answerLine" type="text" style="height:300px;width:500px"></textarea>
-      <button onClick="check()">Next</button>
-      <p id="time"></p>
-    </div>
-    <div id="checkAnswers" class="tab" style="display:none">
-      <p id="checkAnswers_question"></p>
-      <table><tr>
-        <td style="width: 48vw">Your answer:<br><span id="yourAnswer"></span></td>
-        <td style="width: 48vw">Model answer:<br><span id="modelAnswer"></span></td>
-      </tr></table>
-      <p>Your mark: <span id="marksObtained"></span></p>
-      <button onClick="state='nextQuestion'">Next</button>
-    </div>
-    <div id="end" class="tab" style="display:none">
-      <div id="recallIota" style="position:fixed;top:1vh;left:1vw;width:23vw;height:70vh">
-        <h3 class="recall">Recall</h3>
-        <p>You scored <span data-i="scores.recall.score" class="recall"></span> of <span data-i="scores.recall.max" class="recall"></span> in the Recall category</p>
-        <p>This is translated to <span data-i="iota('recall')" class="recall"></span> iotas out of a possible <span data-i="maxIota('recall')" class="recall"></span></p>
-        <p>Gain more score by answering more normal questions correctly.</p>
-      </div>
-      <div id="speedIota" style="position:fixed;top:1vh;left:26vw;width:23vw;height:70vh">
-        <h3 class="speed">Speed</h3>
-        <p>You scored <span data-i="scores.speed.score" class="speed"></span> of <span data-i="scores.speed.max" class="speed"></span> in the Speed category</p>
-        <p>This is translated to <span data-i="iota('speed')" class="speed"></span> iotas out of a possible <span data-i="maxIota('speed')" class="speed"></span></p>
-        <p>Gain more score by answering questions faster (and correctly).</p>
-      </div>
-      <div id="depthIota" style="position:fixed;top:1vh;left:51vw;width:23vw;height:70vh">
-        <h3 class="depth">Depth</h3>
-        <p>You scored <span data-i="scores.depth.score" class="depth"></span> of <span data-i="scores.depth.max" class="depth"></span> in the Depth category</p>
-        <p>This is translated to <span data-i="iota('depth')" class="depth"></span> iotas out of a possible <span data-i="maxIota('depth')" class="depth"></span></p>
-        <p>Gain more score by answering more Advanced questions correctly.</p>
-      </div>
-      <div id="specializationIota" style="position:fixed;top:1vh;left:76vw;width:23vw;height:70vh">
-        <h3 class="specialization">Specialization</h3>
-        <p>You scored <span data-i="scores.specialization.score" class="specialization"></span> of <span data-i="scores.specialization.max" class="specialization"></span> in the Specialization category</p>
-        <p>This is translated to <span data-i="iota('specialization')" class="specialization"></span> iotas out of a possible <span data-i="maxIota('specialization')" class="specialization"></span></p>
-        <p>Gain more score by answering more questions worth <span data-i="specialization_threshold"></span>+ marks correctly.</p>
-      </div>
-      <div id="overallLevel" style="position:fixed;top:72vh;left:1vw;width:98vw;height:27vh">
-        <p>You scored a total of <span data-i="overallIota()"></span> of <span data-i="overallMaxIota()"></span> iotas.</p>
-        <p>You are at Level <span data-i="level()"></span>. Score <span data-i="levelBoundary(level()+1)"></span> iotas to advance to the next Level.</p>
-      </div>
-    </div>
-    <script src="driver.js"></script>
-    <script src="gcse_biology.js"></script>
-    <script src="omccdv.js"></script>
-  </body>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>"Quizzical" by AleManInc</title>
+		<link rel="stylesheet" href="interface.css">
+	<head>
+	<body>
+		<div id="quizzical">
+			<div id="topicSelect" class="tab">
+				<table>
+					<tr>
+						<td><label for="topicSelector">Input the name of the topic:</label></td>
+						<td><select id="topicSelector">
+							<option value="example">Exemplar</option>
+							<option value="gcse_biology,gcse_biochem,gcse_biophy,gcse_science">Biology (GCSE OCR A)</option>
+							<option value="gcse_comp_sci">Computer Science (GCSE OCR)</option>
+							<option value="gcse_chemistry,gcse_biochem,gcse_chemphy,gcse_science">Chemistry (GCSE OCR A)</option>
+							<option value="gcse_christianity">Christianity (GCSE Edexcel B2)</option>
+							<option value="gcse_french">French (GCSE WJEC)</option>
+							<option value="omccdv">OMCCDV</option>
+							<option value="gcse_physics,gcse_biophy,gcse_chemphy,gcse_science">Physics (GCSE OCR A)</option>
+							<option value="gcse_biology,gcse_chemistry,gcse_physics,gcse_biochem,gcse_biophy,gcse_chemphy,gcse_science">Triple Science (GCSE OCR A)</option>
+						</select></td>
+					</tr><tr>
+						<td><label for="lengthSelector">Input the duration in minutes:</label></td>
+						<td><input id="lengthSelector" min="5" type="number" max="525600" step="1" value="30"></input></td>
+					</tr>
+				</table>
+				<button onClick="loadTopic()">Select this topic</button>
+			</div>
+			<div id="howToPlay" class="tab" style="display:none">
+				<p>Welcome to <i>Quizzical by AleManInc</i>!</p>
+				<h1>Instructions:</h1>
+				<button class="collapsible col1">How do I start playing?</button>
+				<div class="collapsible_content">
+					<button onClick="state='nextQuestion'">Click here</button>
+				</div>
+				<button class="collapsible col1">How do I play this?</button>
+				<div class="collapsible_content">
+					<p>In this game you will be asked questions about the topic you just chose. If you answer a question correctly, you score a "mark" based on the difficulty of the question and how extensive your answer was. These marks are converted to points.</p>
+					<p>There are two categories of questions: Normal questions and Advanced questions. Advanced questions are <span style="color:#00ff00">green</span> and are more difficult than Normal questions, but are also worth more points.</p>
+					<p>After answering each question, you will be shown: <ol>
+						<li>the question</li>
+						<li>your answer</li>
+						<li>a "model" answer that would score a perfect mark</li>
+						<li>the mark you scored</li>
+						<li>a button that allows you to proceed.</li>
+					</ol></p>
+					<p>At the end of the game, you will be given a Level from 0 to 9 that reflects how well you did in the quiz. 9 is the highest level which normally requires 90-95% of the total marks (depending on the questions), and 0 is the lowest level which is given if you performed so poorly as to not deserve even the first level.</p>
+				</div>
+				<button class="collapsible col1">How do I win this?</button>
+				<div class="collapsible_content">
+					<p>Each question that you answer is worth a number of "marks". When you answer a question, the marks you obtained are converted to points in 4 categories:<ul>
+						<li>Recall: Each time you answer a regular question correctly, you gain Recall points equal to the number of marks you obtained.</li>
+						<li>Speed: Each time you answer a question correctly, you gain Speed points based on:<ul>
+							<li>how many marks you scored</li>
+							<li>how quickly you answered</li>
+						</ul>The maximum number of Speed points for any question is 10 × the number of marks for that question.</li>
+						<li>Depth: Each time you answer an Advanced question correctly, you gain Depth points equal to the number of marks you obtained.</li>
+						<li>Specialization: Each time you score a perfect mark on a question worth <span data-i="formatNum(specializationThreshold)"></span> or more marks within the time limit, you gain 1 Specialization point.</li>
+					</ul></p>
+					<p>At the end of the quiz, your points in each category are converted to iotas. Normally, Speed points are worth the lowest amount of iotas, followed by Recall points, then Depth points, then Specialization points.</p>
+				</div>
+				<button class="collapsible col1">How long am I going to be here?</button>
+				<div class="collapsible_content">
+					<p>This quiz has:<ul>
+						<li><span data-i="formatNum(questions.length)"></span> questions with a total of <span data-i="formatNum(allQuestionParts(questions).length)"></span> parts (out of a bank of <span data-i="questionListLength"></span> questions with <span data-i="splitListLength"></span> parts) with an estimated total length of <span data-i="(questions.length>0)?timeFormat(questions.map(x => questionPar(x)).reduce((x,y) => x+y)):'foo'"></span></li>
+						<li><span data-i="formatNum(scores.recall.max)" class="recall"></span> Recall points worth <span data-i="formatNum(maxIotas[0])" class="recall"></span> iotas</li>
+						<li><span data-i="formatNum(scores.speed.max)" class="speed"></span> Speed points worth <span data-i="formatNum(maxIotas[1])" class="speed"></span> iotas</li>
+						<li><span data-i="formatNum(scores.depth.max)" class="depth"></span> Depth points worth <span data-i="formatNum(maxIotas[2])" class="depth"></span> iotas</li>
+						<li><span data-i="formatNum(scores.specialization.max)" class="specialization"></span> Specialization points worth <span data-i="formatNum(maxIotas[3])" class="specialization"></span> iotas</li>
+					</ul></p>
+					<p>The level you get is determined by your total iotas - <i>not</i> the total marks or points. In order to obtain Level 9 you need <span data-i="formatNum(levelBoundaries[9])"></span> out of <span data-i="formatNum(maxIotas.reduce((x,y) => x+y))"></span> possible iotas.</p>
+				</div>
+			</div>
+			<div id="quiz" class="tab" style="display:none">
+				<div id="currentQuestion"></div>
+				<button onClick="check()">Next</button>
+				<p style="position:fixed;bottom:0px;left:0px" id="time"></p>
+			</div>
+			<div id="checkAnswers" class="tab" style="display:none">
+				<div id="reviewQuestion"></div>
+				<p id="pointsObtained" style="float:right"></p>
+				<button onClick="state='nextQuestion'">Next</button>
+			</div>
+			<div id="end" class="tab" style="display:none">
+				<div style="position:fixed;top:1vh;left:1vw;width:23vw;height:50vh">
+					<h3 class="recall">Recall</h3>
+					<p>You scored <span id="recallScore" class="recall"></span> of <span id="recallMax" class="recall"></span> in the Recall category</p>
+					<p>This is translated to <span id="iotaRecall" class="recall">?</span> iotas out of a possible <span data-i="formatNum(maxIotas[0])" class="recall"></span></p>
+					<p>Gain more score by answering more normal questions correctly.</p>
+				</div>
+				<div style="position:fixed;top:1vh;left:26vw;width:23vw;height:50vh">
+					<h3 class="speed">Speed</h3>
+					<p>You scored <span id="speedScore" class="speed"></span> of <span id="speedMax" class="speed"></span> in the Speed category</p>
+					<p>This is translated to <span id="iotaSpeed" class="speed">?</span> iotas out of a possible <span data-i="formatNum(maxIotas[1])" class="speed"></span></p>
+					<p>Gain more score by answering questions faster (and correctly).</p>
+				</div>
+				<div style="position:fixed;top:1vh;left:51vw;width:23vw;height:50vh">
+					<h3 class="depth">Depth</h3>
+					<p>You scored <span id="depthScore" class="depth"></span> of <span id="depthMax" class="depth"></span> in the Depth category</p>
+					<p>This is translated to <span id="iotaDepth" class="depth">?</span> iotas out of a possible <span data-i="formatNum(maxIotas[2])" class="depth"></span></p>
+					<p>Gain more score by answering more Advanced questions correctly.</p>
+				</div>
+				<div style="position:fixed;top:1vh;left:76vw;width:23vw;height:50vh">
+					<h3 class="specialization">Specialization</h3>
+					<p>You scored <span id="specializationScore" class="specialization"></span> of <span id="specializationMax" class="specialization"></span> in the Specialization category</p>
+					<p>This is translated to <span id="iotaSpecialization" class="specialization">?</span> iotas out of a possible <span data-i="formatNum(maxIotas[3])" class="specialization"></span></p>
+					<p>Gain more score by answering more questions worth <span data-i="formatNum(specializationThreshold)"></span>+ marks with a full mark and within the par time.</p>
+				</div>
+				<div style="position:fixed;top:52vh;left:1vw;width:98vw;height:24vh">
+					<p>You scored a total of <span id="overallIota">?</span> of <span data-i="formatNum(maxIotas.reduce((x,y) => x+y))"></span> iotas.</p>
+					<p>You are at Level <span id="overallLevel">?</span>. Score <span id="nextLevelBoundary"></span> iotas to advance to the next Level.</p>
+					<div id="triggerTerminus">
+						<button onClick="timestamp=Date.now();state='terminus';document.getElementById('triggerTerminus').style.display='none'">Calculate Level</button>
+					</div>
+					<div id="endButtons" style="display:none">
+						<button onClick="globalThis.location.reload()">Play again</button>
+						<button><a href="https://alemaninc.github.io" style="color:#000000">More by this developer</a></button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="crash"></div>
+		<textarea id="textareaReplicator" style="visibility:hidden;width:100vw;"></textarea>
+		<script src="driver.js"></script>
+		<script src="qfiles/example.js"></script>
+		<script src="qfiles/gcse_biology.js"></script>
+		<script src="qfiles/gcse_comp_sci.js"></script>
+		<script src="qfiles/gcse_chemistry.js"></script>
+		<script src="qfiles/gcse_french.js"></script>
+		<script src="qfiles/gcse_physics.js"></script>
+		<script src="qfiles/gcse_religion.js"></script>
+		<script src="qfiles/gcse_science.js"></script>
+		<script src="qfiles/omccdv.js"></script>
+	</body>
 </html>
