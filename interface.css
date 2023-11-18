@@ -1,3 +1,18 @@
+:root {
+	--point0:#8d7373;
+	--point1:#998066;
+	--point2:#a6a65a;
+	--point3:#80b34d;
+	--point4:#40c040;
+	--point5:#33cc80;
+	--point6:#26d9d9;
+	--point7:#1a80e6;
+	--point8:#0d0df2;
+	--point9:#8000ff;
+	--pointA:#00ff00;
+	--pointC:#ff0099;
+	--pointS:#ff9900;
+}
 body {
 	background-color: #190033;
 	color: #ffffff;
@@ -6,6 +21,7 @@ body {
 	word-wrap:break-word;
 }
 button,div {
+	vertical-align:top;
 	display:inline-block;
 }
 span {
@@ -22,25 +38,13 @@ span {
 td {
 	vertical-align: top;
 }
-.recall {
-	color: #9966ff
-}
-.speed {
-	color: #99ffff
-}
-.depth {
-	color: #66ff66
-}
-.specialization {
-	color: #ff9966
-}
 button {
-	width: 20vw;
-	height: 10vh;
+	width: 300px;
+	height: 70px;
 	border-style: solid;
 	border-width: 2px;
 	border-color: #330066;
-	border-radius: 5vh;
+	border-radius: 5000px;  /* acts as shorter side */
 	background-color: #4c0099
 }
 .level0 {color: #8d7373;font-size: 20px;}
@@ -67,6 +71,31 @@ span.xscript sub {
 	position:absolute;
 	left:0.1em;
 	bottom:-1ex;
+}
+.pointType {
+	height:200px;
+	width:300px;
+	border-style:solid;
+	border-width:2px;
+	border-radius:15px;
+	margin:5px;
+	text-align:center;
+}
+#spellCard {
+	height:60px;
+	width:40px;
+	position:fixed;
+	bottom:10px;
+	right:10px;
+	background-color:#aa0066;
+	color:#ffffff;
+	text-align:center;
+	border-radius:10px;
+	border-style:solid;
+	border-width:2px;
+	border-color:#550033;
+	font-size:12px;
+	padding:5px;
 }
 
 /* Collapsible how-to-play */

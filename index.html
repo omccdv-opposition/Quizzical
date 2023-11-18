@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>"Quizzical" by AleManInc</title>
+		<title>"Quizzical" by alemaninc</title>
 		<link rel="stylesheet" href="interface.css">
 	<head>
 	<body>
@@ -18,108 +18,72 @@
 							<option value="gcse_comp_sci">Computer Science (GCSE OCR)</option>
 							<option value="gcse_chemistry,gcse_biochem,gcse_chemphy,gcse_science">Chemistry (GCSE OCR A)</option>
 							<option value="gcse_christianity">Christianity (GCSE Edexcel B2)</option>
+							<option value="gcse_eng_lit">English Literature (GCSE AQA)</option>
 							<option value="gcse_french">French (GCSE WJEC)</option>
-							<option value="omccdv">OMCCDV</option>
+							<option value="gcse_geography">Geography (GCSE Edexcel B)</option>
+							<option value="omccdv">OMCCDV (Ministry of Anarchy Department of Qualifications)</option>
 							<option value="gcse_physics,gcse_biophy,gcse_chemphy,gcse_science">Physics (GCSE OCR A)</option>
 							<option value="gcse_biology,gcse_chemistry,gcse_physics,gcse_biochem,gcse_biophy,gcse_chemphy,gcse_science">Triple Science (GCSE OCR A)</option>
 						</select></td>
 					</tr><tr>
 						<td><label for="lengthSelector">Input the duration in minutes:</label></td>
 						<td><input id="lengthSelector" min="5" type="number" max="525600" step="1" value="30"></input></td>
+					</tr><tr>
+						<td><label for="OCRMode">OCR Exam mode?:</label></td>
+						<td><input id="OCRMode" type="checkbox"></input></td>
 					</tr>
 				</table>
 				<button onClick="loadTopic()">Select this topic</button>
 			</div>
 			<div id="howToPlay" class="tab" style="display:none">
-				<p>Welcome to <i>Quizzical by AleManInc</i>!</p>
+				<p>Welcome to <i>Quizzical by alemaninc</i>!</p>
 				<h1>Instructions:</h1>
-				<button class="collapsible col1">How do I start playing?</button>
-				<div class="collapsible_content">
-					<button onClick="state='nextQuestion'">Click here</button>
-				</div>
 				<button class="collapsible col1">How do I play this?</button>
 				<div class="collapsible_content">
-					<p>In this game you will be asked questions about the topic you just chose. If you answer a question correctly, you score a "mark" based on the difficulty of the question and how extensive your answer was. These marks are converted to points.</p>
-					<p>There are two categories of questions: Normal questions and Advanced questions. Advanced questions are <span style="color:#00ff00">green</span> and are more difficult than Normal questions, but are also worth more points.</p>
+					<p>In this game you will be asked questions about the topic you just chose. If you answer a question correctly, you score a "mark" based on the difficulty of the question and how detailed/correct your answer was. These marks are converted to points.</p>
 					<p>After answering each question, you will be shown: <ol>
 						<li>the question</li>
 						<li>your answer</li>
 						<li>a "model" answer that would score a perfect mark</li>
-						<li>the mark you scored</li>
+						<li>the mark and points you scored</li>
 						<li>a button that allows you to proceed.</li>
 					</ol></p>
-					<p>At the end of the game, you will be given a Level from 0 to 9 that reflects how well you did in the quiz. 9 is the highest level which normally requires 90-95% of the total marks (depending on the questions), and 0 is the lowest level which is given if you performed so poorly as to not deserve even the first level.</p>
+					<p>You will also gain Spell Points as you proceed through the quiz. If you reach 100 Spell Points, they are converted to a Spell Card which can be used during a question to skip it and automatically score a perfect mark for all its parts. However, it is often better to save Spell Cards as you gain additional points from them at the end.</p>
+					<p>At the end of the game, you will be given a Level from 0 to 9 that reflects how well you did in the quiz. 9 is the highest level and 0 is failure.</p>
 				</div>
 				<button class="collapsible col1">How do I win this?</button>
 				<div class="collapsible_content">
-					<p>Each question that you answer is worth a number of "marks". When you answer a question, the marks you obtained are converted to points in 4 categories:<ul>
-						<li>Recall: Each time you answer a regular question correctly, you gain Recall points equal to the number of marks you obtained.</li>
-						<li>Speed: Each time you answer a question correctly, you gain Speed points based on:<ul>
-							<li>how many marks you scored</li>
-							<li>how quickly you answered</li>
-						</ul>The maximum number of Speed points for any question is 10 × the number of marks for that question.</li>
-						<li>Depth: Each time you answer an Advanced question correctly, you gain Depth points equal to the number of marks you obtained.</li>
-						<li>Specialization: Each time you score a perfect mark on a question worth <span data-i="formatNum(specializationThreshold)"></span> or more marks within the time limit, you gain 1 Specialization point.</li>
-					</ul></p>
-					<p>At the end of the quiz, your points in each category are converted to iotas. Normally, Speed points are worth the lowest amount of iotas, followed by Recall points, then Depth points, then Specialization points.</p>
+					<p>At the end of the game, your points will be converted to iotas. The amount of iotas you get will determine your Level. There are:</p>
+					<div id="allScoreTypes_pre" style="text-align:center"></div>
+					<p>Level requirements are as follows:</p>
+					<table id="levelBoundaryTable" style="text-align:center"></table>
 				</div>
 				<button class="collapsible col1">How long am I going to be here?</button>
 				<div class="collapsible_content">
-					<p>This quiz has:<ul>
-						<li><span data-i="formatNum(questions.length)"></span> questions with a total of <span data-i="formatNum(allQuestionParts(questions).length)"></span> parts (out of a bank of <span data-i="questionListLength"></span> questions with <span data-i="splitListLength"></span> parts) with an estimated total length of <span data-i="(questions.length>0)?timeFormat(questions.map(x => questionPar(x)).reduce((x,y) => x+y)):'foo'"></span></li>
-						<li><span data-i="formatNum(scores.recall.max)" class="recall"></span> Recall points worth <span data-i="formatNum(maxIotas[0])" class="recall"></span> iotas</li>
-						<li><span data-i="formatNum(scores.speed.max)" class="speed"></span> Speed points worth <span data-i="formatNum(maxIotas[1])" class="speed"></span> iotas</li>
-						<li><span data-i="formatNum(scores.depth.max)" class="depth"></span> Depth points worth <span data-i="formatNum(maxIotas[2])" class="depth"></span> iotas</li>
-						<li><span data-i="formatNum(scores.specialization.max)" class="specialization"></span> Specialization points worth <span data-i="formatNum(maxIotas[3])" class="specialization"></span> iotas</li>
-					</ul></p>
-					<p>The level you get is determined by your total iotas - <i>not</i> the total marks or points. In order to obtain Level 9 you need <span data-i="formatNum(levelBoundaries[9])"></span> out of <span data-i="formatNum(maxIotas.reduce((x,y) => x+y))"></span> possible iotas.</p>
+					<p>This quiz has <span data-i="formatNum(questions.length)"></span> questions with a total of <span data-i="formatNum(allQuestionParts(questions).length)"></span> parts with an estimated total length of <span data-i="(questions.length>0)?timeFormat(questions.map(x => questionPar(x)).sum()):'foo'"></span></p>
 				</div>
+				<br><button onClick="state='nextQuestion'">Click here to begin</button>
 			</div>
 			<div id="quiz" class="tab" style="display:none">
 				<div id="currentQuestion"></div>
 				<button onClick="check()">Next</button>
 				<p style="position:fixed;bottom:0px;left:0px" id="time"></p>
+				<div id="spellCard" onClick="useSpellCard()">Spell Card<br><br><span id="spellCards"></span></div>
 			</div>
 			<div id="checkAnswers" class="tab" style="display:none">
 				<div id="reviewQuestion"></div>
-				<p id="pointsObtained" style="float:right"></p>
+				<p id="pointsObtained" style="float:right;text-align:right"></p>
 				<button onClick="state='nextQuestion'">Next</button>
 			</div>
 			<div id="end" class="tab" style="display:none">
-				<div style="position:fixed;top:1vh;left:1vw;width:23vw;height:50vh">
-					<h3 class="recall">Recall</h3>
-					<p>You scored <span id="recallScore" class="recall"></span> of <span id="recallMax" class="recall"></span> in the Recall category</p>
-					<p>This is translated to <span id="iotaRecall" class="recall">?</span> iotas out of a possible <span data-i="formatNum(maxIotas[0])" class="recall"></span></p>
-					<p>Gain more score by answering more normal questions correctly.</p>
-				</div>
-				<div style="position:fixed;top:1vh;left:26vw;width:23vw;height:50vh">
-					<h3 class="speed">Speed</h3>
-					<p>You scored <span id="speedScore" class="speed"></span> of <span id="speedMax" class="speed"></span> in the Speed category</p>
-					<p>This is translated to <span id="iotaSpeed" class="speed">?</span> iotas out of a possible <span data-i="formatNum(maxIotas[1])" class="speed"></span></p>
-					<p>Gain more score by answering questions faster (and correctly).</p>
-				</div>
-				<div style="position:fixed;top:1vh;left:51vw;width:23vw;height:50vh">
-					<h3 class="depth">Depth</h3>
-					<p>You scored <span id="depthScore" class="depth"></span> of <span id="depthMax" class="depth"></span> in the Depth category</p>
-					<p>This is translated to <span id="iotaDepth" class="depth">?</span> iotas out of a possible <span data-i="formatNum(maxIotas[2])" class="depth"></span></p>
-					<p>Gain more score by answering more Advanced questions correctly.</p>
-				</div>
-				<div style="position:fixed;top:1vh;left:76vw;width:23vw;height:50vh">
-					<h3 class="specialization">Specialization</h3>
-					<p>You scored <span id="specializationScore" class="specialization"></span> of <span id="specializationMax" class="specialization"></span> in the Specialization category</p>
-					<p>This is translated to <span id="iotaSpecialization" class="specialization">?</span> iotas out of a possible <span data-i="formatNum(maxIotas[3])" class="specialization"></span></p>
-					<p>Gain more score by answering more questions worth <span data-i="formatNum(specializationThreshold)"></span>+ marks with a full mark and within the par time.</p>
-				</div>
-				<div style="position:fixed;top:52vh;left:1vw;width:98vw;height:24vh">
-					<p>You scored a total of <span id="overallIota">?</span> of <span data-i="formatNum(maxIotas.reduce((x,y) => x+y))"></span> iotas.</p>
-					<p>You are at Level <span id="overallLevel">?</span>. Score <span id="nextLevelBoundary"></span> iotas to advance to the next Level.</p>
-					<div id="triggerTerminus">
-						<button onClick="timestamp=Date.now();state='terminus';document.getElementById('triggerTerminus').style.display='none'">Calculate Level</button>
-					</div>
-					<div id="endButtons" style="display:none">
-						<button onClick="globalThis.location.reload()">Play again</button>
-						<button><a href="https://alemaninc.github.io" style="color:#000000">More by this developer</a></button>
-					</div>
+				<div id="allScoreTypes_post"></div>
+				<div id="iotaProgressBar" style="height:20px;width:calc(100vw - 40px)"></div>
+				<p>Current Level: <span id="overallLevel"></span></p>
+				<p><span id="iotaProgressToLevel"></span> iotas to next level</p>
+				<div id="endButtons" style="display:none">
+					<table id="WWWandEBI"></table>
+					<button onClick="globalThis.location.reload()">Play again</button>
+					<button><a href="https://alemaninc.github.io" style="color:#000000">More by this developer</a></button>
 				</div>
 			</div>
 		</div>
@@ -130,7 +94,9 @@
 		<script src="qfiles/gcse_biology.js"></script>
 		<script src="qfiles/gcse_comp_sci.js"></script>
 		<script src="qfiles/gcse_chemistry.js"></script>
+		<script src="qfiles/gcse_english.js"></script>
 		<script src="qfiles/gcse_french.js"></script>
+		<script src="qfiles/gcse_geography.js"></script>
 		<script src="qfiles/gcse_physics.js"></script>
 		<script src="qfiles/gcse_religion.js"></script>
 		<script src="qfiles/gcse_science.js"></script>
